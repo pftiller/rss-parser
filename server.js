@@ -1,15 +1,19 @@
+const cron = require('node-cron');
 const express = require("express");
 const app = express();
-const mainRouter = require('./router');
+const parseRss = require('./rssParser');
 
 
 const PORT = process.env.PORT || 3001;
 
-
-app.use(express.static("public"));
-app.use('/route', mainRouter); 
-
+cron.schedule('0 2 * * *', function() {
+    console.log('running the funtion');
+    parseRss().then(data => {
+        console.log(data);
+    })
+  });
+  
 
 app.listen(PORT, (error) => {
-    console.log("listening on " + PORT + "...");
-});
+      console.log("listening on " + PORT + "...");
+  });
