@@ -5,50 +5,51 @@ const {
 } = require('@google-cloud/bigquery');
 
 let parser = new Parser();
-const urls = [{
-        program: "Julie's Library",
-        feed: "https://feeds.publicradio.org/public_feeds/julies-library/rss/rss"
-    },
-    {
-        program: "Don't Ask Tig",
-        feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig/rss/rss.rss"
-    },
-    {
-        program: "In the Dark",
-        feed: "https://feeds.publicradio.org/public_feeds/in-the-dark/rss/rss"
-    },
-    {
-        program: "Terrible, Thanks for Asking",
-        feed: "https://feeds.publicradio.org/public_feeds/terrible-thanks-for-asking/rss/rss.rss"
-    },
-    {
-        program: "The Hilarious World of Depression",
-        feed: "https://feeds.publicradio.org/public_feeds/the-hilarious-world-of-depression/rss/rss.rss"
-    },
-    {
-        program: "Spectacular Failures",
-        feed: "https://feeds.publicradio.org/public_feeds/spectacular-failures/rss/rss.rss"
-    },
-    {
-        program: "The Slowdown",
-        feed: "https://feeds.publicradio.org/public_feeds/the-slowdown/rss/rss.rss"
-    },
-    {
-        program: "The Splendid Table",
-        feed: "https://feeds.publicradio.org/public_feeds/the-splendid-table/rss/rss.rss"
-    },
-    {
-        program: "Brains On!",
-        feed: "https://feeds.publicradio.org/public_feeds/brains-on/rss/rss.rss"
-    },
-    {
-        program: "Field Work",
-        feed: "https://feeds.publicradio.org/public_feeds/fieldwork/rss/rss.rss"
-    },
-    {
-        program: "Smash Boom Best",
-        feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best/rss/rss.rss"
-    },
+const urls = [
+    // {
+    //     program: "Julie's Library",
+    //     feed: "https://feeds.publicradio.org/public_feeds/julies-library/rss/rss"
+    // },
+    // {
+    //     program: "Don't Ask Tig",
+    //     feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig/rss/rss.rss"
+    // },
+    // {
+    //     program: "In the Dark",
+    //     feed: "https://feeds.publicradio.org/public_feeds/in-the-dark/rss/rss"
+    // },
+    // {
+    //     program: "Terrible, Thanks for Asking",
+    //     feed: "https://feeds.publicradio.org/public_feeds/terrible-thanks-for-asking/rss/rss.rss"
+    // },
+    // {
+    //     program: "The Hilarious World of Depression",
+    //     feed: "https://feeds.publicradio.org/public_feeds/the-hilarious-world-of-depression/rss/rss.rss"
+    // },
+    // {
+    //     program: "Spectacular Failures",
+    //     feed: "https://feeds.publicradio.org/public_feeds/spectacular-failures/rss/rss.rss"
+    // },
+    // {
+    //     program: "The Slowdown",
+    //     feed: "https://feeds.publicradio.org/public_feeds/the-slowdown/rss/rss.rss"
+    // },
+    // {
+    //     program: "The Splendid Table",
+    //     feed: "https://feeds.publicradio.org/public_feeds/the-splendid-table/rss/rss.rss"
+    // },
+    // {
+    //     program: "Brains On!",
+    //     feed: "https://feeds.publicradio.org/public_feeds/brains-on/rss/rss.rss"
+    // },
+    // {
+    //     program: "Field Work",
+    //     feed: "https://feeds.publicradio.org/public_feeds/fieldwork/rss/rss.rss"
+    // },
+    // {
+    //     program: "Smash Boom Best",
+    //     feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best/rss/rss.rss"
+    // },
     {
         program: "TBTL",
         feed: "https://feeds.publicradio.org/public_feeds/tbtl/rss/rss.rss"
@@ -80,57 +81,66 @@ let removeDups = async () => {
     const [rows] = await bigquery.query(options);
     console.log(`Table is now ${rows.length} rows`);
 }
-    let parseRSS = ()=> {
-        return new Promise((resolve, reject) => { 
+    let parseRSS = () => {
+        return new Promise((resolve, reject) => {
             let dataToAdd = [];
-            urls.forEach(async (url) => {
-             let program = await parser.parseURL(url.feed, (err, feed) => {
-                 if (err) {
-                     reject(err);
-                 }
-                 if (feed.title = url.program) {
- 
-                     feed.items.forEach(item => {
-                        dataToAdd.push({
-                             program: url.program,
-                             title: item.title,
-                             episode: moment(item.pubDate).format('YYYY-MM-DD'),
-                             uri_path: '/podcast' + item.guid
-                         })
- 
-                     });
-                 }
-                 resolve(dataToAdd);
-             });
-             return program;
-         })
-    
-     });
-    }  
+            let parseUri = new RegExp('rss\/o(.*)');
 
-
-
-
-
-
-
-
-module.exports = (async () => {
-    let dataToAdd = await parseRSS();
-        console.log('got the data', dataToAdd);
-        insertRowsAsStream(dataToAdd).then((res) => {
-            if (res = 'Ok') {
-                removeDups()
-                .then(data =>{
-                    console.log('all done', data);
-                })
-                .catch(e => {
-                    console.log(e)
-                })
-                
+            function createRecord(url, item) {
+                return {
+                    program: url.program,
+                    title: item.title,
+                    uri_path: null,
+                    episode: moment(item.pubDate).format('YYYY-MM-DD'),
+                    getUri() {
+                        return this.uri_path = parseUri.exec(item.enclosure.url);
+                    }
+                }
             }
-        }).catch((err)=>{
-            console.log(err);
+
+            urls.forEach(async (url) => {
+                await parser.parseURL(url.feed, (err, feed) => {
+                    if (feed.title = url.program) {
+                        feed.items.forEach(item => {
+                            if (item.hasOwnProperty('enclosure')) {
+                                var obj = createRecord(url, item);
+                                var obj2 = obj.getUri();
+                                obj.uri_path = obj2[1];
+                                delete obj.getUri;
+                                dataToAdd.push(obj)
+                                resolve(dataToAdd);
+                            }
+
+                        });
+                    }
+
+                });
+            })
+        });
+    }
+
+
+
+
+
+
+
+
+    module.exports = (async () => {
+        let hereisdata = await parseRSS();
+        console.log('got the data');
+        insertRowsAsStream(hereisdata).then((res) => {
+            if (res = 'Ok') {
+                // removeDups()
+                // .then(data =>{
+                console.log('all done');
+                // })
+                // .catch(e => {
+                //     console.log(e)
+                // })
+
+            }
+            // }).catch((err)=>{
+            //     console.log(err);
         })
-});
-    
+    });
