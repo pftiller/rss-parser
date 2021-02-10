@@ -55,82 +55,82 @@ const urls = [{
     }
 ];
 
-    const bigquery = new BigQuery({
-        projectId: `apmg-data-warehouse`
-    });
-    const datasetId = 'apm_podcasts';
-    const tableId = 'episode_titles';
-    async function insertRowsAsStream(param) {
-        console.log('here is dataToAdd', param);
-        let rows = param;
-        await bigquery
-            .dataset(datasetId)
-            .table(tableId)
-            .insert(rows);
-        console.log(`Inserted ${rows.length} rows`);
-        return 'Ok';
-    }
-    let parseRSS = (url) => {
-        return new Promise(async (resolve, reject) => {
-            let program = await parser.parseURL(url.feed, (err, feed) => {
-                if (err) {
-                    reject(err);
-                }
+const bigquery = new BigQuery({
+    projectId: `apmg-data-warehouse`
+});
+const datasetId = 'apm_podcasts';
+const tableId = 'episode_titles';
+async function insertRowsAsStream(param) {
+    console.log('here is dataToAdd', param);
+    let rows = param;
+    console.log('here is rows! ', rows)
+    await bigquery
+        .dataset(datasetId)
+        .table(tableId)
+        .insert(rows);
+    console.log(`Inserted ${rows.length} rows`);
+    return 'Ok';
+}
+let removeDups = async () => {
+    let sqlQuery = `CREATE OR REPLACE TABLE ${datasetId}.${tableId} AS SELECT Episode, uri_path, Program, Title FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY Program, Episode) row_number FROM  ${datasetId}.${tableId}) WHERE row_number = 1)`;
+    const options = {
+        query: sqlQuery,
+        location: 'US'
+    };
+    const [rows] = await bigquery.query(options);
+    console.log(`Table is now ${rows.length} rows`);
+}
+    let parseRSS = ()=> {
+        return new Promise((resolve, reject) => { 
+            let dataToAdd = [];
+            urls.forEach(async (url) => {
+             let program = await parser.parseURL(url.feed, (err, feed) => {
+                 if (err) {
+                     reject(err);
+                 }
+                 if (feed.title = url.program) {
+ 
+                     feed.items.forEach(item => {
+                        dataToAdd.push({
+                             program: url.program,
+                             title: item.title,
+                             episode: moment(item.pubDate).format('YYYY-MM-DD'),
+                             uri_path: '/podcast' + item.guid
+                         })
+ 
+                     });
+                 }
+                 resolve(dataToAdd);
+             });
+             return program;
+         })
+    
+     });
+    }  
 
-            if (feed.title = url.program) {
-                let returnData = [];
-                feed.items.forEach(item => {
-                    returnData.push({
-                        program: url.program,
-                        title: item.title,
-                        episode: moment(item.pubDate).format('YYYY-MM-DD'),
-                        uri_path: '/podcast' + item.guid
-                    })
 
-                });
-                
-                resolve(returnData);
-            }
-                return program;
-            });
-        })
 
-    }
-    let dataToAdd = [];
-    urls.forEach(async (url) => {
-        let feed = parseRSS(url)
-        dataToAdd.push(feed);
+
+
+
+
+
+module.exports = (async () => {
+    let dataToAdd = await parseRSS();
+        console.log('got the data', dataToAdd);
         insertRowsAsStream(dataToAdd).then((res) => {
             if (res = 'Ok') {
-                console.log('all done');
+                removeDups()
+                .then(data =>{
+                    console.log('all done', data);
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+                
             }
+        }).catch((err)=>{
+            console.log(err);
         })
-
-    })
-
-
-
-
-module.exports = (() => {
-    Promise.all(dataToAdd).then((data) => {
-        console.log('got the data', data);
-
-    })
 });
-            // let removeDups = async () => {
-            //     let sqlQuery = `CREATE OR REPLACE TABLE ${datasetId}.${tableId} AS SELECT Episode, uri_path, Program, Title FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY Program, Episode) row_number FROM  ${datasetId}.${tableId}) WHERE row_number = 1)`;
-            //     const options = {
-            //         query: sqlQuery,
-            //         location: 'US'
-            //     };
-            //     const [rows] = await bigquery.query(options);
-            //     console.log(`Table is now ${rows.length} rows`);
-            // }
-            // removeDups();
-//         }).catch(e => {
-//             console.log(e)
-//         })
-//     }).catch(e => {
-//         console.log(e)
-//     });
-// });
+    

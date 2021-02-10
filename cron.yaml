@@ -1,4 +1,4 @@
 cron:
 - description: update data
   url: /
-  schedule: every 60 minutes
+  schedule: every 24 hours
