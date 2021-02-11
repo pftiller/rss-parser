@@ -6,14 +6,10 @@ const parseRss = require('./rssParser');
 
 const PORT = process.env.PORT || 3001;
 
-// cron.schedule('0 2 * * *', function() {
-//     console.log('running the funtion');
-//     parseRss().then(data => {
-//         console.log(data);
-//     })
-//   });
-
-parseRss()
+cron.schedule('0 2 * * *', function() {
+    console.log('running the funtion');
+    parseRss()
+  });
 
 app.listen(PORT, (error) => {
       console.log("listening on " + PORT + "...");
