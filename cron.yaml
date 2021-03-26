@@ -1,4 +1,5 @@
 cron:
-- description: update data
+- description: "get episodes"
   url: /
-  schedule: every 24 hours
+  schedule: every day 02:00
+  timezone: America/Chicago

@@ -20,10 +20,6 @@ const urls = [
         feed: "https://feeds.publicradio.org/public_feeds/terrible-thanks-for-asking/rss/rss.rss"
     },
     {
-        program: "The Hilarious World of Depression",
-        feed: "https://feeds.publicradio.org/public_feeds/the-hilarious-world-of-depression/rss/rss.rss"
-    },
-    {
         program: "Spectacular Failures",
         feed: "https://feeds.publicradio.org/public_feeds/spectacular-failures/rss/rss.rss"
     },
@@ -50,11 +46,19 @@ const urls = [
     {
         program: "TBTL",
         feed: "https://feeds.publicradio.org/public_feeds/tbtl/rss/rss.rss"
+    },
+    {
+        program: "TBTL",
+        feed: "https://feeds.publicradio.org/public_feeds/tbtl/rss/rss.rss"
+    },
+    {
+        program: "In Front of Our Eyes",
+        feed: "https://feeds.publicradio.org/public_feeds/in-front-of-our-eyes/rss/rss.rss"
     }
 ];
-
+const projectId = `apmg-data-warehouse`;
 const bigquery = new BigQuery({
-    projectId: `apmg-data-warehouse`
+    projectId: projectId
 });
 const datasetId = 'apm_podcasts';
 const tableId = 'episode_titles';
@@ -67,15 +71,15 @@ async function insertRowsAsStream(param) {
     console.log(`Inserted ${rows.length} rows`);
     return 'Ok';
 }
-// let removeDups = async () => {
-//     let sqlQuery = `CREATE OR REPLACE TABLE ${datasetId}.${tableId} AS SELECT Episode, uri_path, Program, Title FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY Program, Episode) row_number FROM  ${datasetId}.${tableId}) WHERE row_number = 1)`;
-//     const options = {
-//         query: sqlQuery,
-//         location: 'US'
-//     };
-//     const [rows] = await bigquery.query(options);
-//     console.log(`Table is now ${rows.length} rows`);
-// }
+let removeDups = async () => {
+    let sqlQuery = `CREATE OR REPLACE TABLE ${projectId}.${datasetId}.${tableId} AS SELECT Episode, uri_path, Program, Title FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY Program, Episode, uri_path) row_number FROM ${projectId}.${datasetId}.${tableId} ) WHERE row_number = 1`;
+    const options = {
+        query: sqlQuery,
+        location: 'US'
+    };
+    const [rows] = await bigquery.query(options);
+    console.log(`Table is now ${rows.length} rows`);
+}
 let parseRSS = (url) => {
     return new Promise((resolve, reject) => {
         let dataToAdd = [];
@@ -114,27 +118,19 @@ let parseRSS = (url) => {
        let feed = parseRSS(url)
        dataArray.push(feed);
    })
-
-       
-
-
-
-
-
-
     module.exports = (() => {
         Promise.all(dataArray).then((data) => {
             console.log('got the data', data);
             data.forEach((datae) => {
                 insertRowsAsStream(datae).then((res) => {
                     if (res = 'Ok') {
-                        // removeDups()
-                        // .then(data =>{
+                        removeDups()
+                        .then(data =>{
                         console.log('did it', res);
-                        // })
-                        // .catch(e => {
-                        //     console.log(e)
-                        // })
+                        })
+                        .catch(e => {
+                            console.log(e)
+                        })
                     }
                     }).catch((err)=>{
                         console.log(err);
