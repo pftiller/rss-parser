@@ -4,6 +4,18 @@ const {BigQuery} = require('@google-cloud/bigquery');
 let parser = new Parser();
 const urls = [
     {
+        program: "This Is Uncomfortable",
+        feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais"
+    },
+    {
+        program: "Million Bazillion",
+        feed: "https://www.marketplace.org/feed/podcast/million-bazillion"
+    },
+    {
+        program: "The Uncertain Hour",
+        feed: "https://www.marketplace.org/feed/podcast/the-uncertain-hour"
+    },
+    {
         program: "Julie's Library",
         feed: "https://feeds.publicradio.org/public_feeds/julies-library/rss/rss"
     },
@@ -90,9 +102,9 @@ let parseRSS = (url) => {
                 title: item.title,
                 uri_path: null,
                 episode: moment(item.pubDate).format('YYYY-MM-DD'),
-                getUri() {
-                    return this.uri_path = parseUri.exec(item.enclosure.url);
-                }
+            //     getUri() {
+            //         return this.uri_path = parseUri.exec(item.enclosure.url);
+            //     }
             }
         }
         parser.parseURL(url.feed, (err, feed) => {
@@ -102,9 +114,9 @@ let parseRSS = (url) => {
                 feed.items.forEach(item => {
                     if (item.hasOwnProperty('enclosure')) {
                         var obj = createRecord(url, item);
-                        var obj2 = obj.getUri();
-                        obj.uri_path = obj2[1];
-                        delete obj.getUri;
+                        // var obj2 = obj.getUri();
+                        // obj.uri_path = obj2[1];
+                        // delete obj.getUri;
                         dataToAdd.push(obj)
                     }
                     resolve(dataToAdd);
