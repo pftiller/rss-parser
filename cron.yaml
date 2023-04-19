@@ -1,5 +1,0 @@
-cron:
-- description: "get episodes"
-  url: /
-  schedule: every day 02:00
-  timezone: America/Chicago
