@@ -32,7 +32,7 @@ let removeDups = async () => {
     const [rows] = await bigquery.query(options);
     console.log(`Table is now ${rows.length} rows`);
 }
-let parseRSS = (url) => {
+let dissectRSS = (url) => {
     return new Promise((resolve, reject) => {
         let dataToAdd = [];
         let parseUri = new RegExp('\/o(,?.*)');
@@ -61,10 +61,10 @@ let parseRSS = (url) => {
 }
    let dataArray = [];
    urls.forEach(async (url) => {
-       let feed = parseRSS(url)
+       let feed = dissectRSS(url)
        dataArray.push(feed);
    })
-    module.exports = (() => {
+   export function parseRss() {
         Promise.all(dataArray).then((data) => {
             console.log('got the data', data);
             data.forEach((datae) => {
@@ -83,4 +83,4 @@ let parseRSS = (url) => {
                 })  
             })
         })
-    })
+    }

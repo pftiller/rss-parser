@@ -1,24 +1,20 @@
 {
   "name": "rss-ingester",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "version": "2.0.0",
+  "description": "Serverless GCP Cloud Function to fetch episode attributes from APMG public feeds app.",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node --inspect server.js"
+    "start": "node node_modules/@google-cloud/functions-framework --target=parseRss",
+    "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss",
+    "deploy": "gcloud functions deploy getStreamguysEpisodeAttributes --trigger-topic getStreamguysEpisodeAttributes ---runtime=nodejs16 --entry-point=parseRss --service-account=apmg-data-warehouse@appspot.gserviceaccount.com"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/bigquery": "^5.5.0",
-    "@google-cloud/storage": "^6.9.5",
-    "express": "^4.17.1",
-    "moment": "^2.29.1",
-    "node-cron": "^2.0.3",
-    "python": "0.0.4",
+    "@google-cloud/bigquery": "^6.2.0",
+    "@google-cloud/functions-framework": "^3.2.0",
+    "moment": "^2.29.4",
     "rss-parser": "^3.10.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
   }
 }
