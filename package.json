@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node node_modules/@google-cloud/functions-framework --target=parseRss",
-    "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss",
+    "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss --service-account=apmg-data-warehouse@appspot.gserviceaccount.com",
     "deploy": "gcloud functions deploy getStreamguysEpisodeAttributes --trigger-topic getStreamguysEpisodeAttributes  --entry-point=parseRss --runtime nodejs18 --service-account=apmg-data-warehouse@appspot.gserviceaccount.com"
   },
   "author": "",

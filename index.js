@@ -102,7 +102,7 @@ const urls = [
   {
     feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime/rss/rss.rss",
     program: "YourClassical Storytime",
-  },
+  }
 ];
 const projectId = `apmg-data-warehouse`;
 const bigquery = new BigQuery({
