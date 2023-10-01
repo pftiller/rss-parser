@@ -5,9 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node node_modules/@google-cloud/functions-framework --target=parseRss",
-    "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss --service-account=apmg-data-warehouse@appspot.gserviceaccount.com",
-    "deploy": "gcloud functions deploy getStreamguysEpisodeAttributes --trigger-topic getStreamguysEpisodeAttributes  --entry-point=parseRss --runtime nodejs18 --service-account=apmg-data-warehouse@appspot.gserviceaccount.com"
+    "start": "node node_modules/@google-cloud/functions-framework --target=getEpisodeAttributes",
+    "test": "node --inspect node_modules/.bin/functions-framework --target=getEpisodeAttributes",
+    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodeAttributes  --entry-point=parseRss --runtime nodejs20"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +16,12 @@
     "@google-cloud/functions-framework": "^3.2.0",
     "moment": "^2.29.4",
     "rss-parser": "^3.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-promise": "^6.1.1"
   }
 }
