@@ -104,17 +104,20 @@ const urls = [
     program: 'YourClassical Storytime'
   }
 ]
-const projectId = 'apmg-data-warehouse'
+const projectId = `apmg-data-warehouse`;
 const bigquery = new BigQuery({
-  projectId
+    projectId: projectId
 })
 const datasetId = 'apm_podcasts'
 const tableId = 'episode_titles'
 async function insertRowsAsStream (param) {
-  const rows = param
-  await bigquery.dataset(datasetId).table(tableId).insert(rows)
-  console.log(`Inserted ${rows.length} rows`)
-  return 'Ok'
+    const rows = param
+    await bigquery
+        .dataset(datasetId)
+        .table(tableId)
+        .insert(rows)
+    console.log(`Inserted ${rows.length} rows`);
+    return 'Ok'
 }
 const dissectRSS = (url) => {
   return new Promise((resolve, reject) => {
