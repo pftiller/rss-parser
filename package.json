@@ -5,15 +5,16 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node node_modules/@google-cloud/functions-framework --target=getEpisodeAttributes",
-    "test": "node --inspect node_modules/.bin/functions-framework --target=getEpisodeAttributes",
-    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodeAttributes  --entry-point=parseRss --runtime nodejs20"
+    "lint": "eslint .",
+    "start": "node node_modules/@google-cloud/functions-framework --target=parseRss",
+    "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss",
+    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodeAttributes --entry-point=parseRss  --runtime nodejs18 --service-account=apmg-data-warehouse@appspot.gserviceaccount.com"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/bigquery": "^7.2.0",
-    "@google-cloud/functions-framework": "^3.2.0",
+    "@google-cloud/bigquery": "^7.3.0",
+    "@google-cloud/functions-framework": "^3.3.0",
     "moment": "^2.29.4",
     "rss-parser": "^3.10.0"
   },
