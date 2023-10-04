@@ -3,3 +3,4 @@ ignore
 .vscode
 .gcloudignore
 .eslintrc.json
+env-vars.yaml

@@ -134,7 +134,7 @@ const bigquery = new BigQuery({
   projectId: projectId,
 });
 const datasetId = "apm_podcasts";
-const tableId = "episode_legend";
+const tableId = "episode_legend_v2";
 async function insertRowsAsStream(param) {
   const rows = param;
   await bigquery.dataset(datasetId).table(tableId).insert(rows);
@@ -186,24 +186,9 @@ urls.forEach(async (url) => {
   dataArray.push(feed);
 });
 export function parseRss() {
-  let dateToCheck = moment("2023-08-31T10:00:00").format("YYYY-MM-DD");
   Promise.all(dataArray).then((data) => {
     data.forEach((datae) => {
-      for (let i = 0; i < datae.length; i++) {
-        if (datae[i].episode > dateToCheck) {
-          insertRowsAsStream(datae)
-            .then((res) => {
-              if (res === "Ok") {
-                console.log("did it", res);
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          console.log("N/A");
-        }
-      }
+      insertRowsAsStream(datae);
     });
   });
 }
