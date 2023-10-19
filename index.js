@@ -126,15 +126,15 @@ const urls = [
   {
     feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime/rss/rss.rss",
     id: "9284cf58-a6f4-11ec-9738-b757d0ec2a87",
-    program: "YourClassical Storytime",
-  },
+    program: "YourClassical Storytime"
+  }
 ];
 const projectId = `apmg-data-warehouse`;
 const bigquery = new BigQuery({
   projectId: projectId,
 });
 const datasetId = "apm_podcasts";
-const tableId = "episode_legend";
+const tableId = "episode_legend_v4";
 async function insertRowsAsStream(param) {
   const rows = param;
   await bigquery.dataset(datasetId).table(tableId).insert(rows);
@@ -147,15 +147,13 @@ const dissectRSS = (url) => {
     const parseUri = /\/o(,?.*)/;
     function createRecord(url, item) {
       return {
-        bad_episode_id:
+        episode_id:
           url.id + String(moment(item.pubDate).format("YYYY-MM-DD")),
         podcast_id: url.id,
         title: item.title,
         uri_path: null,
         episode: moment(item.pubDate).format("YYYY-MM-DD"),
         program: url.program,
-        episode_id: null,
-        megaphone_file: null,
         getUri() {
           this.uri_path = parseUri.exec(item.enclosure.url);
           return this.uri_path;
@@ -186,24 +184,13 @@ urls.forEach(async (url) => {
   dataArray.push(feed);
 });
 export function parseRss() {
-  let dateToCheck = moment("2023-08-31T10:00:00").format("YYYY-MM-DD");
   Promise.all(dataArray).then((data) => {
     data.forEach((datae) => {
-      for (let i = 0; i < datae.length; i++) {
-        if (datae[i].episode > dateToCheck) {
-          insertRowsAsStream(datae)
-            .then((res) => {
-              if (res === "Ok") {
-                console.log("did it", res);
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          console.log("N/A");
+      insertRowsAsStream(datae).then((res) => {
+        if (res === "Ok") {
+          console.log("did it", res);
         }
-      }
+      });
     });
   });
 }
