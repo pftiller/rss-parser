@@ -7,17 +7,14 @@
   "scripts": {
     "start": "node node_modules/@google-cloud/functions-framework --target=parseRss",
     "test": "node --inspect node_modules/.bin/functions-framework --target=parseRss",
-    "deploy": "gcloud functions deploy parseRss --trigger-topic getEpisodes --runtime nodejs20 --env-vars-file ./env-vars.yaml"
+    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodes --entry-point=parseRss  --runtime nodejs20"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/bigquery": "^7.3.0",
-    "@google-cloud/functions-framework": "^3.0.0",
+    "@google-cloud/functions-framework": "^3.3.0",
     "moment": "^2.29.4",
-    "rss-parser": "^3.10.0"
-  },
-  "devDependencies": {
-    "eslint": "^8.50.0"
+    "rss-parser": "^3.13.0"
   }
 }
