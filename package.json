@@ -14,7 +14,9 @@
   "dependencies": {
     "@google-cloud/bigquery": "^7.3.0",
     "@google-cloud/functions-framework": "^3.3.0",
+    "dotenv": "^16.3.1",
     "moment": "^2.29.4",
+    "request": "^2.88.2",
     "rss-parser": "^3.13.0"
   }
 }
