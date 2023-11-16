@@ -4,4 +4,4 @@ ignore
 .gcloudignore
 .eslintrc.json
 env-vars.yaml
-.env
+**/.env
