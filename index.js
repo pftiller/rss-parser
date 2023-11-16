@@ -5,7 +5,7 @@ import moment from "moment";
 import request from "request";
 import { BigQuery } from "@google-cloud/bigquery";
 const parser = new Parser();
-// const urls = [
+const urls = [
 //   {
 //     feed: "https://feeds.publicradio.org/public_feeds/brains-on/rss/rss.rss",
 //     program: "Brains On! Science podcast for kids",
@@ -22,10 +22,11 @@ const parser = new Parser();
 //     feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig/rss/rss.rss",
 //     program: "Don't Ask Tig",
 //   },
-//   {
-//     feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
-//     program: "Financially Inclined",
-//   },
+  {
+    feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
+    program: "Financially Inclined",
+  // },
+}
 //   {
 //     feed: "https://feeds.publicradio.org/public_feeds/forever-ago/rss/rss.rss",
 //     program: "Forever Ago",
@@ -96,7 +97,7 @@ const parser = new Parser();
 //   },
 //   {
 //     feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
-//     program: "This is Uncomfortable",
+//     program: "This Is Uncomfortable",
 //   },
 //   {
 //     feed: "https://feeds.publicradio.org/public_feeds/truth-be-told/rss/rss.rss",
@@ -106,7 +107,7 @@ const parser = new Parser();
 //     feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime/rss/rss.rss",
 //     program: "YourClassical Storytime",
 //   },
-// ];
+];
 const projectId = `apmg-data-warehouse`;
 const bigquery = new BigQuery({
   projectId: projectId,
@@ -114,59 +115,59 @@ const bigquery = new BigQuery({
 const datasetId = "apm_podcasts";
 const tableId = "episode_legend_stage";
 async function insertRowsAsStream(param) {
-  const rows = param;
-  await bigquery.dataset(datasetId).table(tableId).insert(rows);
-  console.log(`Inserted ${rows.length} rows`);
+  console.log('here is param', param);
+  // const rows = param;
+  // await bigquery.dataset(datasetId).table(tableId).insert(rows);
+  // console.log(`Inserted ${rows.length} rows`);
   return "Ok";
 }
+let mergeObjects = (obj, src) => {
+  for (var key in src) {
+    if (src.hasOwnProperty(key)) obj[key] = src[key];
+  }
 
-
-
-
+  return obj;
+};
 
 let callTriton = () => {
   return new Promise((resolve, reject) => {
     let yesterdaysEpisodes = [];
     function createRecord(item) {
       return {
-        program: 
-        episode: moment(item.date).subtract(6, 'hours').format("YYYY-MM-DD"),
-        title: item.title,
-        uri_path: item.uri_path,
+        program: item[0].value,
+        episode: moment(item[2].exportValue)
+          .subtract(6, "hours")
+          .format("YYYY-MM-DD"),
+        // title: item[3].exportValue,
+        title: item[1].exportValue
       };
     }
-
-
-
-
-    let options = {
-      method: "GET",
-      url: "https://metrics-api.tritondigital.com/v1/podcast/saved-query/4e082a21-6a9b-4dec-b157-1238729a36c9/",
-      headers: {
-        Authorization: "Basic dHJpdG9uYXBpYWNjZXNzQG1wci5vcmc6OUw5a2x6enpTNg==",
-      },
-    };
-    request(options, (error, response) => {
-      if (error) throw new Error(error);
-      let episodes = JSON.parse(response.body);
-
-
-      for(let i = 0; i < episodes.length; i++) {
-        let obj = createRecord(episodes[i]);
-
-
-
-        if(episodes[i].date === moment().subtract(1, 'days').format("YYYY-MM-DD")) {
-          yesterdaysEpisodes.push(episodes[i]);
+    request({
+        method: "GET",
+        url: "https://metrics-api.tritondigital.com/v1/podcast/saved-query/acd5928a-dc6e-4001-8007-0a4566058f65/",
+        // url: "https://metrics-api.tritondigital.com/v1/podcast/saved-query/4e082a21-6a9b-4dec-b157-1238729a36c9/",
+        headers: {
+          Authorization:
+            "Basic dHJpdG9uYXBpYWNjZXNzQG1wci5vcmc6OUw5a2x6enpTNg=="
         }
+      },
+      function (error, response) {
+        if (error) {
+          reject(error);
+        } else {
+          let respArray = JSON.parse(response.body);
+          let episodes = respArray.data;
+          for (let i = 0; i < episodes.length; i++) {
+            var obj = createRecord(episodes[i]);
+            yesterdaysEpisodes.push(obj);
+          }
+          
+        };
+        resolve(yesterdaysEpisodes);
       }
-    });
+    );
   });
 };
-
-
-
-
 
 const dissectRSS = (url) => {
   return new Promise((resolve, reject) => {
@@ -175,7 +176,7 @@ const dissectRSS = (url) => {
     function createRecord(url, item) {
       return {
         program: url.program,
-        episode: moment(item.pubDate).subtract(6, 'hours').format("YYYY-MM-DD"),
+        episode: moment(item.pubDate).subtract(6, "hours").format("YYYY-MM-DD"),
         title: item.title,
         uri_path: parseUri.exec(item.enclosure.url)[1],
       };
@@ -201,21 +202,26 @@ urls.forEach(async (url) => {
   dataArray.push(feed);
 });
 export async function parseRss() {
+  let tritonData = await callTriton();
   await Promise.all(dataArray)
     .then((data) => {
-      data.forEach((datae) => {
-        if (datae.title !== null) {
-          insertRowsAsStream(datae)
-            .then((res) => {
-              if (res === "Ok") {
-                console.log("did it", res);
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      });
+      let rssData = data;
+      for (let i = 0; i < tritonData.length; i++) {
+        rssData.forEach((datae) => {
+          let mergedResult = mergeObjects(datae, tritonData[i]);
+          if (mergedResult.title !== null) {
+            insertRowsAsStream(mergedResult)
+              .then((res) => {
+                if (res === "Ok") {
+                  console.log("did it", res);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        });
+      }
     })
     .catch((err) => {
       console.log(err);
