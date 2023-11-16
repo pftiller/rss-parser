@@ -1,5 +1,5 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import dotenv from 'dotenv'
+dotenv.config()
 import Parser from "rss-parser";
 import moment from "moment";
 import request from "request";
@@ -143,10 +143,9 @@ let callTriton = () => {
       {
         method: "GET",
         url: "https://metrics-api.tritondigital.com/v1/podcast/saved-query/4e082a21-6a9b-4dec-b157-1238729a36c9/",
-        headers: {
-          Authorization:
-            `Basic ${process.env.TRITON_API_KEY}`,
-        },
+        'headers': {
+          'Authorization': `Basic ${process.env.TRITON_API_KEY}`
+        }
       },
       function (error, response) {
         if (error) {
