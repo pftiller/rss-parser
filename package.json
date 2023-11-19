@@ -1,18 +1,23 @@
 {
   "name": "rss-ingester",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "version": "3.0.0",
+  "description": "Serverless GCP Cloud Function to fetch episode attributes from APMG public feeds app.",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node --inspect server.js"
+    "start": "node node_modules/@google-cloud/functions-framework --target=processAndMergeData",
+    "test": "node --inspect node_modules/.bin/functions-framework --target=processAndMergeData",
+    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodes --entry-point=processAndMergeData  --runtime nodejs20"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/bigquery": "^5.5.0",
-    "express": "^4.17.1",
-    "moment": "^2.29.2",
-    "rss-parser": "^3.10.0"
+    "@google-cloud/bigquery": "^7.3.0",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "base-64": "^1.0.0",
+    "dotenv": "^16.3.1",
+    "moment": "^2.29.4",
+    "node-fetch": "^3.3.2",
+    "rss-parser": "^3.13.0"
   }
 }
