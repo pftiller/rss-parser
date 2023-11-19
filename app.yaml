@@ -1,8 +1,0 @@
-
-# [START app_yaml]
-runtime: nodejs12
-env: standard
-
-handlers:
-- url: /.*
-  script: auto
