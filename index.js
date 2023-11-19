@@ -1,10 +1,25 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
+import { BigQuery } from "@google-cloud/bigquery";
 import Parser from "rss-parser";
 import moment from "moment";
-import request from "request";
-import { BigQuery } from "@google-cloud/bigquery";
+import base64 from "base-64";
+import fetch from "node-fetch";
+import { Headers } from "node-fetch";
+const headers = new Headers();
+headers.append(
+  "Authorization",
+  `Basic ${base64.encode(`${process.env.username}:${process.env.password}`)}`
+);
+const options = {
+  method: "GET",
+  headers: headers,
+  redirect: "follow",
+};
 const parser = new Parser();
+const bigquery = new BigQuery({ projectId: "apmg-data-warehouse" });
+const datasetId = "apm_podcasts";
+const tableId = "episode_legend_stage";
 const urls = [
   {
     feed: "https://feeds.publicradio.org/public_feeds/brains-on/rss/rss.rss",
@@ -107,64 +122,39 @@ const urls = [
     program: "YourClassical Storytime",
   },
 ];
-const projectId = `apmg-data-warehouse`;
-const bigquery = new BigQuery({
-  projectId: projectId,
-});
-const datasetId = "apm_podcasts";
-const tableId = "episode_legend_stage";
-async function insertRowsAsStream(param) {
-  const rows = param;
-  await bigquery.dataset(datasetId).table(tableId).insert(rows);
-  console.log(`Inserted ${rows.length} rows`);
-  return "Ok";
-}
-let mergeObjects = (obj, src) => {
-  for (var key in src) {
-    if (src.hasOwnProperty(key)) obj[key] = src[key];
-  }
 
-  return obj;
-};
-
-let callTriton = () => {
+async function callTriton() {
   return new Promise((resolve, reject) => {
-    let yesterdaysEpisodes = [];
+    let dataToAdd = [];
     function createRecord(item) {
       return {
-        program: item[0].value,
         episode: moment(item[2].exportValue)
           .subtract(6, "hours")
           .format("YYYY-MM-DD"),
-        title: item[3].exportValue,
+        title: item[1].exportValue,
       };
     }
-    request(
-      {
-        method: "GET",
-        url: "https://metrics-api.tritondigital.com/v1/podcast/saved-query/4e082a21-6a9b-4dec-b157-1238729a36c9/",
-        'headers': {
-          'Authorization': `Basic ${process.env.TRITON_API_KEY}`
-        }
-      },
-      function (error, response) {
-        if (error) {
-          reject(error);
-        } else {
-          let respArray = JSON.parse(response.body);
-          let episodes = respArray.data;
-          for (let i = 0; i < episodes.length; i++) {
-            var obj = createRecord(episodes[i]);
-            yesterdaysEpisodes.push(obj);
-          }
-        }
-        resolve(yesterdaysEpisodes);
-      }
-    );
-  });
-};
 
-const dissectRSS = (url) => {
+    fetch(
+      "https://metrics-api.tritondigital.com/v1/podcast/saved-query/acd5928a-dc6e-4001-8007-0a4566058f65/",
+      options
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        let episodes = response.data;
+        for (let i = 0; i < episodes.length; i++) {
+          var obj = createRecord(episodes[i]);
+          dataToAdd.push(obj);
+        }
+        resolve(dataToAdd);
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+  });
+}
+async function dissectRSS(url) {
   return new Promise((resolve, reject) => {
     const dataToAdd = [];
     const parseUri = /\/o(,?.*)/;
@@ -172,7 +162,7 @@ const dissectRSS = (url) => {
       return {
         program: url.program,
         episode: moment(item.pubDate).subtract(6, "hours").format("YYYY-MM-DD"),
-        title: item.title,
+        // title: item.title,
         uri_path: parseUri.exec(item.enclosure.url)[1],
       };
     }
@@ -185,41 +175,43 @@ const dissectRSS = (url) => {
             const obj = createRecord(url, item);
             dataToAdd.push(obj);
           }
-          resolve(dataToAdd);
         });
       }
     });
+    resolve(dataToAdd);
   });
-};
-const dataArray = [];
-urls.forEach(async (url) => {
-  const feed = dissectRSS(url);
-  dataArray.push(feed);
-});
-export async function parseRss() {
-  let tritonData = await callTriton();
-  await Promise.all(dataArray)
-    .then((data) => {
-      let rssData = data;
-      let minimum = Math.min(rssData.length, tritonData.length);
-      for (let i = 0; i < minimum; i++) {
-        let mergedResult = mergeObjects(rssData[i], tritonData[i]);
-        for (let i = 0; i < mergedResult.length; i++) {
-          if (mergedResult[i].uri_path !== null) {
-            insertRowsAsStream(mergedResult[i])
-              .then((res) => {
-                if (res === "Ok") {
-                  console.log("did it", res);
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }
-        }
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+}
+
+async function insertRowsAsStream(param) {
+  const rows = param;
+  try {
+    await bigquery.dataset(datasetId).table(tableId).insert(rows);
+    return "Ok";
+  } catch (error) {
+    console.error("received error", error);
+  }
+}
+function mergeObjects(obj, src) {
+  return { ...obj, ...src };
+}
+async function findMin(rss, triton) {
+  let dataToSend = [];
+  let minimum = Math.min(rss.length, triton.length);
+  for (let i = 0; i < minimum; i++) {
+    const mergedObject = mergeObjects(triton[i], rss[i]);
+    dataToSend.push(mergedObject);
+  }
+  return dataToSend;
+}
+export async function processAndMergeData() {
+  try {
+    const tritonData = await callTriton();
+    const rssPromises = urls.map((url) => dissectRSS(url));
+    const rssData = await Promise.all(rssPromises);
+    const mergedData = await findMin(rssData, tritonData);
+    await insertRowsAsStream(mergedData);
+    return "Process completed successfully.";
+  } catch (error) {
+    console.error("Error processing data: ", error);
+  }
 }

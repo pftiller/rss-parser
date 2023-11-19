@@ -1,7 +1,7 @@
 
 # RSS Feed Parser
 
-An application that parses RSS feeds and retrieves episode properties to write to Google BigQuery.
+Serverless GCP Cloud Function triggered by Pub/Sub targeted by cron job in Cloud Scheduler to retrieve episodes from select RSS feeds and fetch additional properties via the Triton Metrics API to write to Google BigQuery.
 
 ## Built With
 
