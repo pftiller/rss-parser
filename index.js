@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { BigQuery } from "@google-cloud/bigquery";
+import anyAscii from 'any-ascii';
 import Parser from "rss-parser";
 import moment from "moment";
 import base64 from "base-64";
@@ -27,7 +28,7 @@ const urls = [
   },
   {
     feed: "https://feeds.publicradio.org/public_feeds/charm-words/rss/rss.rss",
-    program: "Charm Words",
+    program: "Charm Words: Daily Affirmations for Kids",
   },
   {
     feed: "https://www.marketplace.org/feed/podcast/corner-office-from-marketplace",
@@ -128,15 +129,13 @@ async function callTriton() {
     let dataToAdd = [];
     function createRecord(item) {
       return {
-        episode: moment(item[2].exportValue)
-          .subtract(6, "hours")
-          .format("YYYY-MM-DD"),
-        title: item[1].exportValue,
+        program: item[0].exportValue,
+        title: anyAscii(item[3].exportValue),
       };
     }
 
     fetch(
-      "https://metrics-api.tritondigital.com/v1/podcast/saved-query/acd5928a-dc6e-4001-8007-0a4566058f65/",
+      "https://metrics-api.tritondigital.com/v1/podcast/saved-query/4e082a21-6a9b-4dec-b157-1238729a36c9/",
       options
     )
       .then((res) => res.json())
@@ -162,7 +161,7 @@ async function dissectRSS(url) {
       return {
         program: url.program,
         episode: moment(item.pubDate).subtract(6, "hours").format("YYYY-MM-DD"),
-        // title: item.title,
+        title: anyAscii(item.title),
         uri_path: parseUri.exec(item.enclosure.url)[1],
       };
     }
