@@ -175,7 +175,6 @@ async function dissectRSS(url) {
     });
   });
 }
-
 async function insertRowsAsStream(param) {
   const rows = param;
   try {
@@ -186,7 +185,6 @@ async function insertRowsAsStream(param) {
   }
 }
 function mergeObjects(array1, array2, key) {
-  // return { ...obj, ...src };
   return array1
     .filter((a1) => array2.some((a2) => a1[key] === a2[key]))
     .map((a1) => {
@@ -216,9 +214,8 @@ export async function processAndMergeData() {
     const rssPromises = await urls.map((url) => dissectRSS(url));
     const rssData = (await Promise.all(rssPromises)).flat();
     const startDate = moment().subtract(2, "days").format("YYYY-MM-DD");
-    const filteredRssData = rssData.filter(item => item.episode >= startDate);
+    const filteredRssData = rssData.filter((item) => item.episode >= startDate);
     const mergedData = await findMin(filteredRssData, tritonData, "title");
-    console.log(mergedData);
     await insertRowsAsStream(mergedData);
     return "Process completed successfully.";
   } catch (error) {
