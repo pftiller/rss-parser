@@ -75,6 +75,10 @@ const urls = [
     program: "Moment of Um",
   },
   {
+    feed: "https://feeds.publicradio.org/public_feeds/ripple/rss/rss.rss",
+    program: "Ripple",
+  },
+  {
     feed: "https://feeds.publicradio.org/public_feeds/sent-away/rss/rss.rss",
     program: "Sent Away",
   },
