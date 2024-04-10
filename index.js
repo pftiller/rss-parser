@@ -95,10 +95,6 @@ const urls = [
     program: "Tiny Huge Decisions",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/angry-therapist/rss/rss.rss",
-    program: "The Angry Therapist",
-  },
-  {
     feed: "https://feeds.publicradio.org/public_feeds/the-one-recipe/rss/rss.rss",
     program: "The One Recipe",
   },
@@ -209,7 +205,6 @@ async function findMin(rss, triton, key) {
       mergedData.push({ ...smallItem, ...match });
     }
   });
-
   return mergedData;
 }
 export async function processAndMergeData() {
@@ -217,7 +212,7 @@ export async function processAndMergeData() {
     const tritonData = await callTriton();
     const rssPromises = await urls.map((url) => dissectRSS(url));
     const rssData = (await Promise.all(rssPromises)).flat();
-    const startDate = moment().subtract(2, "days").format("YYYY-MM-DD");
+    const startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
     const filteredRssData = rssData.filter((item) => item.episode >= startDate);
     const mergedData = await findMin(filteredRssData, tritonData, "title");
     await insertRowsAsStream(mergedData);
