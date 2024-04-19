@@ -116,7 +116,7 @@ const urls = [
   },
   {
     feed: "https://feeds.publicradio.org/public_feeds/truth-be-told/rss/rss.rss",
-    program: "Truth Be Told with Tonya Mosley",
+    program: "Truth Be Told Presents: She Has A Name",
   },
   {
     feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime/rss/rss.rss",
