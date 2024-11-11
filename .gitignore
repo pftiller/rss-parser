@@ -1,5 +1,4 @@
 node_modules/
-ignore
 .vscode
 .gcloudignore
 .eslintrc.json
