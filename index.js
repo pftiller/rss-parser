@@ -23,19 +23,15 @@ const datasetId = "apm_podcasts";
 const tableId = "episode_legend_stage";
 const urls = [
   {
-    feed: "https://feeds.publicradio.org/public_feeds/brains-on/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/brains-on",
     program: "Brains On! Science podcast for kids",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/charm-words/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/charm-words",
     program: "Charm Words: Daily Affirmations for Kids",
   },
   {
-    feed: "https://www.marketplace.org/feed/podcast/corner-office-from-marketplace",
-    program: "Corner Office from Marketplace",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig",
     program: "Don't Ask Tig",
   },
   {
@@ -43,7 +39,7 @@ const urls = [
     program: "Financially Inclined",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/forever-ago/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/forever-ago",
     program: "Forever Ago",
   },
   {
@@ -71,55 +67,43 @@ const urls = [
     program: "Million Bazillion",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/moment-of-um/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/moment-of-um",
     program: "Moment of Um",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/ripple/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/ripple",
     program: "Ripple",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/sent-away/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/sent-away",
     program: "Sent Away",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best",
     program: "Smash Boom Best",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/sold-a-story/rss/rss.rss",
+    feed: "https://legacyfeeds.publicradio.org/apm-reports/sold-a-story/rss.xml",
     program: "Sold a Story",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/tiny-huge-decisions/rss/rss.rss",
-    program: "Tiny Huge Decisions",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/the-one-recipe/rss/rss.rss",
-    program: "The One Recipe",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/the-slowdown/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/the-slowdown",
     program: "The Slowdown",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/the-splendid-table/rss/rss.rss",
-    program: "The Splendid Table",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/the-uncertain-hour",
-    program: "The Uncertain Hour",
   },
   {
     feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
     program: "This Is Uncomfortable",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/truth-be-told/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/truth-be-told",
     program: "Truth Be Told Presents: She Has A Name",
   },
+    {
+    feed: "https://feeds.publicradio.org/public_feeds/what-happened-in-alabama",
+    program: "What Happened In Alabama?",
+  },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime/rss/rss.rss",
+    feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime",
     program: "YourClassical Storytime",
   },
 ];
