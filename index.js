@@ -22,90 +22,90 @@ const bigquery = new BigQuery({ projectId: "apmg-data-warehouse" });
 const datasetId = "apm_podcasts";
 const tableId = "episode_legend_stage";
 const urls = [
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/brains-on",
-    program: "Brains On! Science podcast for kids",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/charm-words",
-    program: "Charm Words: Daily Affirmations for Kids",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig",
-    program: "Don't Ask Tig",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
-    program: "Financially Inclined",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/forever-ago",
-    program: "Forever Ago",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/how-we-survive",
-    program: "How We Survive",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/make-me-smart",
-    program: "Make Me Smart",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/marketplace",
-    program: "Marketplace",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/marketplace-morning-report",
-    program: "Marketplace Morning Report",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/marketplace-tech",
-    program: "Marketplace Tech",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/million-bazillion",
-    program: "Million Bazillion",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/moment-of-um",
-    program: "Moment of Um",
-  },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/brains-on",
+  //   program: "Brains On! Science podcast for kids",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/charm-words",
+  //   program: "Charm Words: Daily Affirmations for Kids",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/dont-ask-tig",
+  //   program: "Don't Ask Tig",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
+  //   program: "Financially Inclined",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/forever-ago",
+  //   program: "Forever Ago",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/how-we-survive",
+  //   program: "How We Survive",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/make-me-smart",
+  //   program: "Make Me Smart",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/marketplace",
+  //   program: "Marketplace",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/marketplace-morning-report",
+  //   program: "Marketplace Morning Report",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/marketplace-tech",
+  //   program: "Marketplace Tech",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/million-bazillion",
+  //   program: "Million Bazillion",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/moment-of-um",
+  //   program: "Moment of Um",
+  // },
   {
     feed: "https://feeds.publicradio.org/public_feeds/ripple",
     program: "Ripple",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/sent-away",
-    program: "Sent Away",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best",
-    program: "Smash Boom Best",
-  },
-  {
-    feed: "https://legacyfeeds.publicradio.org/apm-reports/sold-a-story/rss.xml",
-    program: "Sold a Story",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/the-slowdown",
-    program: "The Slowdown",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
-    program: "This Is Uncomfortable",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/truth-be-told",
-    program: "Truth Be Told Presents: She Has A Name",
-  },
-    {
-    feed: "https://feeds.publicradio.org/public_feeds/what-happened-in-alabama",
-    program: "What Happened In Alabama?",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime",
-    program: "YourClassical Storytime",
-  },
+  }
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/sent-away",
+  //   program: "Sent Away",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best",
+  //   program: "Smash Boom Best",
+  // },
+  // {
+  //   feed: "https://legacyfeeds.publicradio.org/apm-reports/sold-a-story/rss.xml",
+  //   program: "Sold a Story",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/the-slowdown",
+  //   program: "The Slowdown",
+  // },
+  // {
+  //   feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
+  //   program: "This Is Uncomfortable",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/truth-be-told",
+  //   program: "Truth Be Told Presents: She Has A Name",
+  // },
+  //   {
+  //   feed: "https://feeds.publicradio.org/public_feeds/what-happened-in-alabama",
+  //   program: "What Happened In Alabama?",
+  // },
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime",
+  //   program: "YourClassical Storytime",
+  // },
 ];
 
 async function callTriton() {
@@ -139,7 +139,7 @@ async function callTriton() {
 }
 async function dissectRSS(url) {
   return new Promise((resolve, reject) => {
-    const parseUri = /\/o(,?.*)/;
+    const parseUri = /\/o(,?.*?)(?=\?)/;
     parser.parseURL(url.feed, (err, feed) => {
       if (err) {
         reject(err);
@@ -152,7 +152,7 @@ async function dissectRSS(url) {
               .subtract(6, "hours")
               .format("YYYY-MM-DD"),
             title: anyAscii(item.title),
-            uri_path: parseUri.exec(item.enclosure.url)[1],
+            uri_path: parseUri.exec(item.enclosure.url.toLowerCase())[1],
           }));
         resolve(dataToAdd);
       }
