@@ -50,10 +50,10 @@ const urls = [
   //   feed: "https://www.marketplace.org/feed/podcast/make-me-smart",
   //   program: "Make Me Smart",
   // },
-  // {
-  //   feed: "https://www.marketplace.org/feed/podcast/marketplace",
-  //   program: "Marketplace",
-  // },
+  {
+    feed: "https://www.marketplace.org/feed/podcast/marketplace",
+    program: "Marketplace"
+  }
   // {
   //   feed: "https://www.marketplace.org/feed/podcast/marketplace-morning-report",
   //   program: "Marketplace Morning Report",
@@ -70,10 +70,10 @@ const urls = [
   //   feed: "https://feeds.publicradio.org/public_feeds/moment-of-um",
   //   program: "Moment of Um",
   // },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/ripple",
-    program: "Ripple",
-  }
+  // {
+  //   feed: "https://feeds.publicradio.org/public_feeds/ripple",
+  //   program: "Ripple",
+  // },
   // {
   //   feed: "https://feeds.publicradio.org/public_feeds/sent-away",
   //   program: "Sent Away",
@@ -105,8 +105,17 @@ const urls = [
   // {
   //   feed: "https://feeds.publicradio.org/public_feeds/classical-kids-storytime",
   //   program: "YourClassical Storytime",
-  // },
+  // }
 ];
+
+async function adjustPubDate(program, date) {
+  if (program === "Marketplace" || program === "Make Me Smart") {
+    return moment(date).subtract(1, "hours").format("YYYY-MM-DD");
+  }
+  else {
+    return moment(date).format("YYYY-MM-DD");
+  }
+}
 
 async function callTriton() {
   return new Promise((resolve, reject) => {
@@ -115,7 +124,7 @@ async function callTriton() {
       return {
         program: item[0].exportValue,
         title: anyAscii(item[3].exportValue),
-        episode: moment(item[2].exportValue).format("YYYY-MM-DD"),
+        episode: adjustPubDate(item[0].exportValue, item[2].exportValue),
       };
     }
     fetch(
