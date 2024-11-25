@@ -84,7 +84,7 @@ const urls = [
   }
 ];
 
-async function adjustPubDate(program, date) {
+let adjustPubDate = function(program, date) {
   if (program === "Marketplace" || program === "Make Me Smart") {
     return moment(date).subtract(1, "hours").format("YYYY-MM-DD");
   }
