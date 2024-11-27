@@ -81,17 +81,16 @@ const urls = [
   {
     feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
     program: "This Is Uncomfortable",
-  }
+  },
 ];
 
-let adjustPubDate = function(program, date) {
+let adjustPubDate = function (program, date) {
   if (program === "Marketplace" || program === "Make Me Smart") {
-    return moment(date).subtract(1, "hours").format("YYYY-MM-DD");
-  }
-  else {
+    return moment(date).subtract(6, "hours").format("YYYY-MM-DD");
+  } else {
     return moment(date).format("YYYY-MM-DD");
   }
-}
+};
 
 async function callTriton() {
   return new Promise((resolve, reject) => {
@@ -100,7 +99,6 @@ async function callTriton() {
       return {
         program: item[0].exportValue,
         title: anyAscii(item[3].exportValue),
-        episode: adjustPubDate(item[0].exportValue, item[2].exportValue),
       };
     }
     fetch(
@@ -133,9 +131,7 @@ async function dissectRSS(url) {
           .filter((item) => item.hasOwnProperty("enclosure"))
           .map((item) => ({
             program: url.program,
-            episode: moment(item.pubDate)
-              .subtract(6, "hours")
-              .format("YYYY-MM-DD"),
+            episode: adjustPubDate(url.program, item.pubDate),
             title: anyAscii(item.title),
             uri_path: parseUri.exec(item.enclosure.url)[1].toLowerCase(),
           }));
@@ -152,14 +148,6 @@ async function insertRowsAsStream(param) {
   } catch (error) {
     console.error("received error", error);
   }
-}
-function mergeObjects(array1, array2, key) {
-  return array1
-    .filter((a1) => array2.some((a2) => a1[key] === a2[key]))
-    .map((a1) => {
-      let a2 = array2.find((a2) => a1[key] === a2[key]);
-      return { ...a1, ...a2 };
-    });
 }
 async function findMin(rss, triton, key) {
   let smallerArray = rss.length <= triton.length ? rss : triton;
@@ -181,7 +169,7 @@ export async function processAndMergeData() {
     const tritonData = await callTriton();
     const rssPromises = await urls.map((url) => dissectRSS(url));
     const rssData = (await Promise.all(rssPromises)).flat();
-    const startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
+    const startDate = moment().subtract(10, "days").format("YYYY-MM-DD");
     const filteredRssData = rssData.filter((item) => item.episode >= startDate);
     const mergedData = await findMin(filteredRssData, tritonData, "title");
     await insertRowsAsStream(mergedData);
