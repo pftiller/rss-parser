@@ -84,8 +84,8 @@ const urls = [
   },
   {
     feed: "https://feeds.publicradio.org/public_feeds/truth-be-told",
-    program: "Truth Be Told with Tonya Mosley",
-  },
+    program: "Truth Be Told with Tonya Mosley"
+  }
 ];
 
 let adjustPubDate = function (program, date) {
