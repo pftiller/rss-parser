@@ -22,6 +22,10 @@ const bigquery = new BigQuery({ projectId: "apmg-data-warehouse" });
 const datasetId = "apm_podcasts";
 const tableId = "episode_legend_stage";
 const urls = [
+    {
+    feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
+    program: "Financially Inclined",
+  },
   {
     feed: "https://www.marketplace.org/feed/podcast/how-we-survive",
     program: "How We Survive",
@@ -57,6 +61,10 @@ const urls = [
   {
     feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
     program: "This Is Uncomfortable",
+  },
+  {
+    feed: "https://feeds.publicradio.org/public_feeds/this-old-house-radio-hour",
+    program: "This Old House Radio Hour"
   }
 ];
 
