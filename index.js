@@ -23,22 +23,6 @@ const datasetId = "apm_podcasts";
 const tableId = "episode_legend_stage";
 const urls = [
   {
-    feed: "https://feeds.publicradio.org/public_feeds/brains-on",
-    program: "Brains On! Science podcast for kids",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/charm-words",
-    program: "Charm Words: Daily Affirmations for Kids",
-  },
-  {
-    feed: "https://www.marketplace.org/feed/podcast/financially-inclined",
-    program: "Financially Inclined",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/forever-ago",
-    program: "Forever Ago",
-  },
-  {
     feed: "https://www.marketplace.org/feed/podcast/how-we-survive",
     program: "How We Survive",
   },
@@ -63,14 +47,6 @@ const urls = [
     program: "Million Bazillion",
   },
   {
-    feed: "https://feeds.publicradio.org/public_feeds/moment-of-um",
-    program: "Moment of Um",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/smash-boom-best",
-    program: "Smash Boom Best",
-  },
-  {
     feed: "https://legacyfeeds.publicradio.org/apm-reports/sold-a-story/rss.xml",
     program: "Sold a Story",
   },
@@ -81,10 +57,6 @@ const urls = [
   {
     feed: "https://www.marketplace.org/feed/podcast/this-is-uncomfortable-reema-khrais",
     program: "This Is Uncomfortable",
-  },
-  {
-    feed: "https://feeds.publicradio.org/public_feeds/truth-be-told",
-    program: "Truth Be Told with Tonya Mosley"
   }
 ];
 
