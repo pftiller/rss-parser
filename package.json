@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node node_modules/@google-cloud/functions-framework --target=processAndMergeData",
     "test": "node --inspect node_modules/.bin/functions-framework --target=processAndMergeData",
-    "deploy": "gcloud functions deploy getEpisodeAttributes --trigger-topic getEpisodes --entry-point=processAndMergeData  --runtime nodejs20"
+    "deploy": "gcloud functions deploy getEpisodeAttributes2 --trigger-topic getEpisodes --entry-point=processAndMergeData  --runtime nodejs20 --env-vars-file=env-vars.yaml"
   },
   "dependencies": {
     "@google-cloud/bigquery": "^8.1.1",
